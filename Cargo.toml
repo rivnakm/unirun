@@ -1,5 +1,6 @@
 [package]
 name = "unirun"
+description = "Universal project runner"
 version = "0.0.1-rc.1"
 edition = "2021"
 authors = ["Mike Rivnak <rivnakm1@gmail.com>"]

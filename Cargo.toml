@@ -2,6 +2,9 @@
 name = "unirun"
 version = "0.0.1-rc.1"
 edition = "2021"
+authors = ["Mike Rivnak <rivnakm1@gmail.com>"]
+license-file = "LICENSE"
+repository = "https://github.com/rivnakm/unirun"
 
 [[bin]]
 name = "uni"

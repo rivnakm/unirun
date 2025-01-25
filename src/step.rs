@@ -24,6 +24,7 @@ impl Run for Step {
 }
 
 #[derive(Clone, Debug)]
+#[cfg_attr(test, derive(PartialEq))]
 struct CmdArgs {
     cmd: String,
     args: Vec<String>,
@@ -35,6 +36,7 @@ impl From<&str> for CmdArgs {
         for (key, val) in std::env::vars() {
             value = value.replace(format!("${key}").as_str(), val.as_str());
         }
+        value = value.replace(" \\\n", " ");
 
         let mut shlex = Shlex::new(value.as_str());
 
@@ -42,5 +44,42 @@ impl From<&str> for CmdArgs {
         let args = shlex.collect();
 
         CmdArgs { cmd, args }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    pub fn test_cmd_args_from_str() {
+        let value = "cargo run --help";
+
+        let expected = CmdArgs {
+            cmd: "cargo".into(),
+            args: ["run", "--help"].into_iter().map(String::from).collect(),
+        };
+        let actual = CmdArgs::from(value);
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    pub fn test_cmd_args_from_str_multiline() {
+        let value = r#"cargo run -- \
+            --really-long true \
+            --testing foo
+            "#;
+
+        let expected = CmdArgs {
+            cmd: "cargo".into(),
+            args: ["run", "--", "--really-long", "true", "--testing", "foo"]
+                .into_iter()
+                .map(String::from)
+                .collect(),
+        };
+        let actual = CmdArgs::from(value);
+
+        assert_eq!(actual, expected);
     }
 }

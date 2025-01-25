@@ -1,4 +1,4 @@
-use std::{collections::HashMap, error::Error, fmt::Display, thread};
+use std::{collections::HashMap, error::Error, fmt::Display};
 
 use itertools::Itertools;
 use petgraph::{
@@ -33,6 +33,16 @@ impl Display for JobNotFoundError {
 }
 
 pub fn run_job(runfile: &Runfile, job_id: &str) -> Result<(), Box<dyn Error>> {
+    use signal_hook::consts::{SIGINT, SIGTERM};
+    use std::sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    };
+
+    let term = Arc::new(AtomicBool::new(false));
+    signal_hook::flag::register(SIGINT, Arc::clone(&term))?;
+    signal_hook::flag::register(SIGTERM, Arc::clone(&term))?;
+
     let graph = collect_dependencies(runfile)?;
     let order = create_run_order(job_id, graph)?;
 
@@ -46,13 +56,16 @@ pub fn run_job(runfile: &Runfile, job_id: &str) -> Result<(), Box<dyn Error>> {
         }
     }
 
-    'outer: while !persistent_steps.is_empty() {
+    'outer: while !persistent_steps.is_empty() && !term.load(Ordering::Relaxed) {
         for proc in persistent_steps.iter_mut() {
             if (proc.try_wait()?).is_some() {
                 break 'outer;
             }
         }
         std::thread::sleep(std::time::Duration::from_millis(500));
+    }
+    if term.load(Ordering::Relaxed) {
+        println!("Exit signal received, terminating...")
     }
     for proc in persistent_steps.iter_mut() {
         proc.kill()?;

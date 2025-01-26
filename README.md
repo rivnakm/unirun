@@ -1,5 +1,8 @@
 # unirun
 
+![Rust](https://img.shields.io/badge/rust-%23FF4300.svg?style=for-the-badge&logo=rust&logoColor=white)
+![Crates.io Version](https://img.shields.io/crates/v/unirun?style=for-the-badge)
+
 Universal project runner. Handles concurrent and dependent tasks
 
 ## Installation

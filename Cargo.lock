@@ -312,7 +312,7 @@ checksum = "11cd88e12b17c6494200a9c1b683a04fcac9573ed74cd1b62aeb2727c5592243"
 
 [[package]]
 name = "unirun"
-version = "0.0.1-rc.1"
+version = "0.1.0"
 dependencies = [
  "clap",
  "itertools",

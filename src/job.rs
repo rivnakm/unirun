@@ -67,8 +67,20 @@ pub fn run_job(runfile: &Runfile, job_id: &str) -> Result<(), Box<dyn Error>> {
     if term.load(Ordering::Relaxed) {
         println!("Exit signal received, terminating...")
     }
+
     for proc in persistent_steps.iter_mut() {
-        proc.kill()?;
+        #[cfg(target_family = "unix")]
+        {
+            use nix::sys::signal::{self, Signal};
+            use nix::unistd::Pid;
+            signal::kill(Pid::from_raw(proc.id() as i32), Signal::SIGTERM).unwrap();
+
+            std::thread::sleep(std::time::Duration::from_millis(250));
+        };
+        #[cfg(target_family = "windows")]
+        {
+            proc.kill().expect("failed to kill process");
+        }
     }
 
     Ok(())

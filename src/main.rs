@@ -1,4 +1,4 @@
-use std::error::Error;
+use std::{error::Error, path::PathBuf};
 
 use clap::{Parser, Subcommand};
 use job::run_job;
@@ -17,17 +17,26 @@ struct Args {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// List available jobs
     List,
+
+    /// Run a job
     Run(RunArgs),
 }
 
 #[derive(Debug, Parser)]
 struct RunArgs {
+    /// Job to run
     job_id: Option<String>,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
+
+    if !PathBuf::from("uni.toml").exists() {
+        eprintln!("No 'uni.toml' found in the current directory");
+        std::process::exit(1);
+    }
 
     let runfile = read_runfile()?;
 

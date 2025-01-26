@@ -1,0 +1,21 @@
+[package]
+name = "unirun"
+description = "Universal project runner"
+version = "0.1.0"
+edition = "2021"
+authors = ["Mike Rivnak <rivnakm1@gmail.com>"]
+license-file = "LICENSE"
+repository = "https://github.com/rivnakm/unirun"
+
+[[bin]]
+name = "uni"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.5.27", features = ["derive"] }
+itertools = "0.14.0"
+petgraph = "0.7.1"
+serde = { version = "1.0.217", features = ["derive"] }
+shlex = "1.3.0"
+signal-hook = "0.3.17"
+toml = "0.8.19"

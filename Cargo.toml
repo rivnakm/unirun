@@ -1,7 +1,7 @@
 [package]
 name = "unirun"
 description = "Universal project runner"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 authors = ["Mike Rivnak <rivnakm1@gmail.com>"]
 license = "MIT"

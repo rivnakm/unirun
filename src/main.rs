@@ -13,6 +13,10 @@ mod step;
 struct Args {
     #[command(subcommand)]
     command: Command,
+
+    /// Change to DIRECTORY before doing anything
+    #[arg(short = 'C', long)]
+    directory: Option<PathBuf>,
 }
 
 #[derive(Debug, Subcommand)]
@@ -32,6 +36,20 @@ struct RunArgs {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
+
+    if let Some(directory) = args.directory {
+        if !directory.exists() {
+            eprintln!("{:?} directory does not exist", directory);
+            std::process::exit(-1);
+        }
+
+        if !directory.is_dir() {
+            eprintln!("{:?} is not a directory", directory);
+            std::process::exit(-1);
+        }
+
+        std::env::set_current_dir(directory)?;
+    }
 
     if !PathBuf::from("uni.toml").exists() {
         eprintln!("No 'uni.toml' found in the current directory");

@@ -73,7 +73,11 @@ pub fn run_job(runfile: &Runfile, job_id: &str) -> Result<(), Box<dyn Error>> {
         {
             use nix::sys::signal::{self, Signal};
             use nix::unistd::Pid;
-            signal::kill(Pid::from_raw(proc.id() as i32), Signal::SIGTERM).unwrap();
+            match signal::kill(Pid::from_raw(proc.id() as i32), Signal::SIGTERM) {
+                // ESRCH: process not found, i.e. it has already terminated
+                Err(nix::errno::Errno::ESRCH) | Ok(_) => (),
+                Err(e) => return Err(Box::new(e)),
+            }
 
             std::thread::sleep(std::time::Duration::from_millis(250));
         };

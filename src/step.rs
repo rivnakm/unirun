@@ -14,6 +14,8 @@ impl Run for Step {
 
         let mut proc = Command::new(cmd_args.cmd).args(cmd_args.args).spawn()?;
 
+        std::thread::sleep(self.startup_delay);
+
         if self.persistent {
             Ok(Some(proc))
         } else {

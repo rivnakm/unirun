@@ -73,17 +73,15 @@ pub fn run_job(runfile: &Runfile, job_id: &str) -> Result<(), Box<dyn Error>> {
         {
             use nix::sys::signal::{self, Signal};
             use nix::unistd::Pid;
-            match signal::kill(Pid::from_raw(proc.id() as i32), Signal::SIGTERM) {
-                // ESRCH: process not found, i.e. it has already terminated
-                Err(nix::errno::Errno::ESRCH) | Ok(_) => (),
-                Err(e) => return Err(Box::new(e)),
-            }
+            // We don't really care if we failed to kill a process, and exiting on error would
+            // prevent subsequent processes from being stopped.
+            _ = signal::kill(Pid::from_raw(proc.id() as i32), Signal::SIGTERM);
 
             std::thread::sleep(std::time::Duration::from_millis(250));
         };
         #[cfg(target_family = "windows")]
         {
-            proc.kill().expect("failed to kill process");
+            _ = proc.kill();
         }
     }
 

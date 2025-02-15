@@ -45,8 +45,8 @@ mod tests {
     #[test]
     fn test_deserialize_startup_delay() {
         let toml = r#"
-            run = "foo"
-            startup_delay = 20
+            run: foo
+            startup_delay: 20
         "#;
 
         let expected = Step {
@@ -55,7 +55,7 @@ mod tests {
             startup_delay: Duration::from_millis(20),
         };
 
-        let step: Step = toml::from_str(toml).unwrap();
+        let step: Step = serde_yaml::from_str(toml).unwrap();
 
         assert_eq!(step, expected);
     }
@@ -63,7 +63,7 @@ mod tests {
     #[test]
     fn test_deserialize_startup_delay_default() {
         let toml = r#"
-            run = "foo"
+            run: foo
         "#;
 
         let expected = Step {
@@ -72,7 +72,7 @@ mod tests {
             startup_delay: Duration::from_millis(0),
         };
 
-        let step: Step = toml::from_str(toml).unwrap();
+        let step: Step = serde_yaml::from_str(toml).unwrap();
 
         assert_eq!(step, expected);
     }

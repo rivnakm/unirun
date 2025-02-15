@@ -13,25 +13,25 @@ cargo install unirun
 
 ## Usage
 
-Create a `uni.toml` file in your working directory
+Create a `uni.yaml` file in your working directory
 
-```toml
-default = "dev"
+```yaml
+default: dev
 
-[jobs.db]
-name = "Start PostgreSQL podman container"
+jobs:
+  db:
+    name: "Start PostgreSQL podman container"
+    steps:
+      - run: "podman run --rm --name postgres-dev --env POSTGRES_PASSWORD=$POSTGRES_PASSWORD postgres:17-bookworm"
+        persistent: true
 
-[[jobs.db.steps]]
-run = "podman run --rm --name postgres-dev --env POSTGRES_PASSWORD=$POSTGRES_PASSWORD postgres:17-bookworm"
-persistent = true
-
-[jobs.dev]
-name = "Run API"
-needs = ["db"]
-
-[[jobs.dev.steps]]
-run = "dotnet run --launch-profile=https"
-persistent = true
+  dev:
+    name: "Run API"
+    needs:
+      - db
+    steps:
+      - run: "dotnet run --launch-profile=https"
+        persistent: true
 ```
 
 Then, run a specific job

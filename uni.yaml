@@ -1,0 +1,7 @@
+default: test
+
+jobs:
+  test:
+    name: "Run unit tests"
+    steps:
+      - run: cargo test

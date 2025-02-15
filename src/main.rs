@@ -51,8 +51,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         std::env::set_current_dir(directory)?;
     }
 
-    if !PathBuf::from("uni.toml").exists() {
-        eprintln!("No 'uni.toml' found in the current directory");
+    if !PathBuf::from("uni.yaml").exists() {
+        eprintln!("No 'uni.yaml' found in the current directory");
         std::process::exit(1);
     }
 
@@ -80,7 +80,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn read_runfile() -> Result<Runfile, Box<dyn Error>> {
-    let content = std::fs::read_to_string("uni.toml")?;
+    let content = std::fs::read_to_string("uni.yaml")?;
 
-    Ok(toml::from_str(content.as_str())?)
+    Ok(serde_yaml::from_str(content.as_str())?)
 }
